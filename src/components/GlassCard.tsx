@@ -1,4 +1,4 @@
-import { Box, Paper } from '@mui/material';
+import { Paper } from '@mui/material';
 import type { ReactNode } from 'react';
 
 interface GlassCardProps {

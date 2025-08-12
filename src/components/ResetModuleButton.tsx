@@ -1,7 +1,6 @@
 import { IconButton, Tooltip } from '@mui/material';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { clearModuleStorage } from '../hooks/storageUtils';
-import React from 'react';
 
 interface ResetModuleButtonProps {
   storageKey: string;
