@@ -8,6 +8,7 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { useState } from 'react';
 import Home from './modules/Home';
 import UnitConverter from './modules/UnitConverter';
+import CurrencyConverter from './modules/CurrencyConverter';
 
 
 const drawerWidth = 240;
@@ -15,6 +16,7 @@ const drawerWidth = 240;
 const menuItems = [
   { text: 'Inicio', icon: <HomeIcon />, path: '/' },
   { text: 'Conversor de Unidades', icon: <SwapHorizIcon />, path: '/conversor' },
+  { text: 'Conversor de Monedas', icon: <SwapHorizIcon />, path: '/monedas' },
   // Agrega aquí más herramientas
 ];
 
@@ -179,12 +181,27 @@ function App() {
               {drawer}
             </Drawer>
           </Box>
-          <Box component="main" sx={{ flexGrow: 1, p: { xs: 1, sm: 3 }, width: { sm: `calc(100% - ${drawerWidth}px)` }, backgroundColor: 'background.default', minHeight: '100vh', transition: 'background 0.3s' }}>
-            <Toolbar />
-            <Box sx={{ maxWidth: 900, mx: 'auto', width: '100%' }}>
+          <Box component="main" sx={{
+            flexGrow: 1,
+            p: 0,
+            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            backgroundColor: 'background.default',
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'background 0.3s',
+          }}>
+            <Box sx={{
+              width: '100%',
+              maxWidth: 900,
+              px: { xs: 1, sm: 3 },
+              boxSizing: 'border-box',
+            }}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/conversor" element={<UnitConverter />} />
+                <Route path="/monedas" element={<CurrencyConverter />} />
                 {/* Agrega más rutas aquí */}
               </Routes>
             </Box>
