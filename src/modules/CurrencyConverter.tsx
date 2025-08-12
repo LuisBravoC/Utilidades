@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { Box, TextField, MenuItem, Typography, CircularProgress, IconButton, Tooltip } from '@mui/material';
+import { Box, TextField, Typography, CircularProgress, IconButton, Tooltip, Autocomplete } from '@mui/material';
 import { ResetModuleButton } from '../components/ResetModuleButton';
 import GlassCard from '../components/GlassCard';
 import GlassBox from '../components/GlassBox';
@@ -72,23 +72,20 @@ const CurrencyConverter: React.FC = () => {
           />
         </Box>
         <Box display="flex" gap={2} mb={3} width="100%" alignItems="center">
-          <TextField
-            select
-            label="De"
-            value={from}
-            onChange={e => setState(s => ({ ...s, from: e.target.value }))}
-            fullWidth
-            size="medium"
-            disabled={currenciesLoading}
-          >
-            {currenciesLoading ? (
-              <MenuItem value="" disabled>Cargando...</MenuItem>
-            ) : (
-              currencies.map(c => (
-                <MenuItem key={c.code} value={c.code}>{c.name} ({c.code})</MenuItem>
-              ))
+          <Autocomplete
+            options={currencies}
+            getOptionLabel={option => `${option.name} (${option.code})`}
+            loading={currenciesLoading}
+            value={currencies.find(c => c.code === from) || null}
+            onChange={(_, newValue) => {
+              if (newValue) setState(s => ({ ...s, from: newValue.code }));
+            }}
+            isOptionEqualToValue={(option, value) => option.code === value.code}
+            renderInput={params => (
+              <TextField {...params} label="De" fullWidth size="medium" disabled={currenciesLoading} />
             )}
-          </TextField>
+            sx={{ minWidth: 0, flex: 1 }}
+          />
           <Tooltip title="Intercambiar monedas">
             <IconButton
               color="primary"
@@ -101,23 +98,20 @@ const CurrencyConverter: React.FC = () => {
               <SwapHorizIcon fontSize="inherit" />
             </IconButton>
           </Tooltip>
-          <TextField
-            select
-            label="A"
-            value={to}
-            onChange={e => setState(s => ({ ...s, to: e.target.value }))}
-            fullWidth
-            size="medium"
-            disabled={currenciesLoading}
-          >
-            {currenciesLoading ? (
-              <MenuItem value="" disabled>Cargando...</MenuItem>
-            ) : (
-              currencies.map(c => (
-                <MenuItem key={c.code} value={c.code}>{c.name} ({c.code})</MenuItem>
-              ))
+          <Autocomplete
+            options={currencies}
+            getOptionLabel={option => `${option.name} (${option.code})`}
+            loading={currenciesLoading}
+            value={currencies.find(c => c.code === to) || null}
+            onChange={(_, newValue) => {
+              if (newValue) setState(s => ({ ...s, to: newValue.code }));
+            }}
+            isOptionEqualToValue={(option, value) => option.code === value.code}
+            renderInput={params => (
+              <TextField {...params} label="A" fullWidth size="medium" disabled={currenciesLoading} />
             )}
-          </TextField>
+            sx={{ minWidth: 0, flex: 1 }}
+          />
         </Box>
         <Box sx={{ mt: 4, width: '100%', display: 'flex', justifyContent: 'center' }}>
           <GlassBox>
