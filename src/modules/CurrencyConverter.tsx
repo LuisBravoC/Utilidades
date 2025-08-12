@@ -1,20 +1,17 @@
-
-
-
 import React, { useEffect, useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Box, TextField, MenuItem, Typography, CircularProgress, IconButton, Tooltip } from '@mui/material';
+import { ResetModuleButton } from '../components/ResetModuleButton';
 import GlassCard from '../components/GlassCard';
 import GlassBox from '../components/GlassBox';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import { HeaderWithReset } from '../components/HeaderWithReset';
 
 
 const CurrencyConverter: React.FC = () => {
-  const [state, setState] = useLocalStorage('currencyConverterState', {
-    amount: 1,
-    from: 'USD',
-    to: 'MXN',
-  });
+  const defaultState = { amount: 1, from: 'USD', to: 'MXN' };
+  const storageKey = 'currencyConverterState';
+  const [state, setState] = useLocalStorage(storageKey, defaultState);
   const { amount, from, to } = state;
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
@@ -60,9 +57,10 @@ const CurrencyConverter: React.FC = () => {
 
     return (
       <GlassCard>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, color: 'primary.main', mb: 3 }}>
-          Conversor de Monedas
-        </Typography>
+        <HeaderWithReset
+          title="Conversor de Monedas"
+          resetButton={<ResetModuleButton storageKey={storageKey} defaultState={defaultState} setState={setState} />}
+        />
         <Box display="flex" gap={2} mb={3} width="100%">
           <TextField
             label="Cantidad"

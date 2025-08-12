@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Box, TextField, MenuItem, Typography, IconButton, Tooltip } from '@mui/material';
+import { Box, TextField, MenuItem, Typography, IconButton, Tooltip, Button } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import GlassCard from '../components/GlassCard';
 import GlassBox from '../components/GlassBox';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { ResetModuleButton } from '../components/ResetModuleButton';
+import { HeaderWithReset } from '../components/HeaderWithReset';
 
 const units = [
   { label: 'Kilómetros', short: 'km', value: 0.001 },
@@ -21,7 +23,8 @@ const units = [
 
 export default function UnitConverter() {
   const defaultState = { from: 1, to: 100, value: 1 };
-  const [state, setState] = useLocalStorage('unitConverterState', defaultState);
+  const storageKey = 'unitConverterState';
+  const [state, setState] = useLocalStorage(storageKey, defaultState);
   const { from, to, value } = state;
   const [result, setResult] = useState(0);
 
@@ -35,9 +38,10 @@ export default function UnitConverter() {
 
   return (
     <GlassCard sx={{ mt: { xs: 2, sm: 0 } }}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, color: 'primary.main', mb: 3 }}>
-        Conversor de Unidades
-      </Typography>
+      <HeaderWithReset
+                title="Conversor de Unidades"
+                resetButton={<ResetModuleButton storageKey={storageKey} defaultState={defaultState} setState={setState} />}
+      />
       <Box display="flex" gap={2} mb={3} width="100%" alignItems="center">
         <TextField
           label="Valor"
