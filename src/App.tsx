@@ -9,14 +9,15 @@ import { useState } from 'react';
 import Home from './modules/Home';
 import UnitConverter from './modules/UnitConverter';
 import CurrencyConverter from './modules/CurrencyConverter';
+import { MonetizationOn, SquareFoot } from '@mui/icons-material';
 
 
 const drawerWidth = 240;
 
 const menuItems = [
   { text: 'Inicio', icon: <HomeIcon />, path: '/' },
-  { text: 'Conversor de Unidades', icon: <SwapHorizIcon />, path: '/conversor' },
-  { text: 'Conversor de Monedas', icon: <SwapHorizIcon />, path: '/monedas' },
+  { text: 'Conversor de Unidades', icon: <SquareFoot />, path: '/conversor' },
+  { text: 'Conversor de Monedas', icon: <MonetizationOn />, path: '/monedas' },
   // Agrega aquí más herramientas
 ];
 

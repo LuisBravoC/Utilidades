@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, TextField, MenuItem, Typography, IconButton, Tooltip } from '@mui/material';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import GlassCard from '../components/GlassCard';
 import GlassBox from '../components/GlassBox';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const units = [
   { label: 'Kilómetros', short: 'km', value: 0.001 },
@@ -18,13 +19,10 @@ const units = [
   { label: 'Millas náuticas', short: 'nmi', value: 0.000539957 },
 ];
 
-
-import { useEffect } from 'react';
-
 export default function UnitConverter() {
-  const [from, setFrom] = useState(1);
-  const [to, setTo] = useState(100);
-  const [value, setValue] = useState(1);
+  const defaultState = { from: 1, to: 100, value: 1 };
+  const [state, setState] = useLocalStorage('unitConverterState', defaultState);
+  const { from, to, value } = state;
   const [result, setResult] = useState(0);
 
   const handleConvert = (val: number, from: number, to: number) => {
@@ -33,22 +31,21 @@ export default function UnitConverter() {
 
   useEffect(() => {
     handleConvert(value, from, to);
-  }, []);
+  }, [value, from, to]);
 
   return (
     <GlassCard sx={{ mt: { xs: 2, sm: 0 } }}>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, color: 'primary.main', mb: 3 }}>
         Conversor de Unidades
       </Typography>
-      <Box display="flex" gap={2} mb={3} width="100%">
+      <Box display="flex" gap={2} mb={3} width="100%" alignItems="center">
         <TextField
           label="Valor"
           type="number"
           value={value}
           onChange={e => {
             const v = Number(e.target.value);
-            setValue(v);
-            handleConvert(v, from, to);
+            setState(s => ({ ...s, value: v }));
           }}
           fullWidth
           size="medium"
@@ -61,8 +58,7 @@ export default function UnitConverter() {
           value={from}
           onChange={e => {
             const v = Number(e.target.value);
-            setFrom(v);
-            handleConvert(value, v, to);
+            setState(s => ({ ...s, from: v }));
           }}
           fullWidth
           size="medium"
@@ -76,9 +72,7 @@ export default function UnitConverter() {
             color="primary"
             sx={{ mx: 0.1, my: { xs: 2, sm: 0 } }}
             onClick={() => {
-              setFrom(to);
-              setTo(from);
-              handleConvert(value, to, from);
+              setState(s => ({ ...s, from: s.to, to: s.from }));
             }}
             size="large"
           >
@@ -91,8 +85,7 @@ export default function UnitConverter() {
           value={to}
           onChange={e => {
             const v = Number(e.target.value);
-            setTo(v);
-            handleConvert(value, from, v);
+            setState(s => ({ ...s, to: v }));
           }}
           fullWidth
           size="medium"

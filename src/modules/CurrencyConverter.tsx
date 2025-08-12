@@ -2,15 +2,20 @@
 
 
 import React, { useEffect, useState } from 'react';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Box, TextField, MenuItem, Typography, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import GlassCard from '../components/GlassCard';
 import GlassBox from '../components/GlassBox';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 
+
 const CurrencyConverter: React.FC = () => {
-  const [amount, setAmount] = useState(1);
-  const [from, setFrom] = useState('USD');
-  const [to, setTo] = useState('MXN');
+  const [state, setState] = useLocalStorage('currencyConverterState', {
+    amount: 1,
+    from: 'USD',
+    to: 'MXN',
+  });
+  const { amount, from, to } = state;
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
   const [rates, setRates] = useState<Record<string, number>>({});
@@ -63,7 +68,7 @@ const CurrencyConverter: React.FC = () => {
             label="Cantidad"
             type="number"
             value={amount}
-            onChange={e => setAmount(Number(e.target.value))}
+            onChange={e => setState(s => ({ ...s, amount: Number(e.target.value) }))}
             fullWidth
             size="medium"
           />
@@ -73,7 +78,7 @@ const CurrencyConverter: React.FC = () => {
             select
             label="De"
             value={from}
-            onChange={e => setFrom(e.target.value)}
+            onChange={e => setState(s => ({ ...s, from: e.target.value }))}
             fullWidth
             size="medium"
             disabled={currenciesLoading}
@@ -91,8 +96,7 @@ const CurrencyConverter: React.FC = () => {
               color="primary"
               sx={{ mx: 1, my: { xs: 2, sm: 0 } }}
               onClick={() => {
-                setFrom(to);
-                setTo(from);
+                setState(s => ({ ...s, from: s.to, to: s.from }));
               }}
               size="large"
             >
@@ -103,7 +107,7 @@ const CurrencyConverter: React.FC = () => {
             select
             label="A"
             value={to}
-            onChange={e => setTo(e.target.value)}
+            onChange={e => setState(s => ({ ...s, to: e.target.value }))}
             fullWidth
             size="medium"
             disabled={currenciesLoading}

@@ -15,7 +15,7 @@ export default function GlassCard({ children, sx }: GlassCardProps) {
         maxWidth: { xs: 400, sm: 600 },
         minWidth: { sm: 420 },
         mx: 'auto',
-        borderRadius: 5,
+        borderRadius: 3,
         boxShadow: '0 8px 90px 0 rgba(31,38,135,0.18)',
         //border: '1.5px solid rgba(80,180,255,0.18)',
         backdropFilter: 'blur(10px)',
