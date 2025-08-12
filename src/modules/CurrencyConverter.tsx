@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, TextField, MenuItem, Typography, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import GlassCard from '../components/GlassCard';
+import GlassBox from '../components/GlassBox';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 
 const CurrencyConverter: React.FC = () => {
@@ -66,6 +67,8 @@ const CurrencyConverter: React.FC = () => {
             fullWidth
             size="medium"
           />
+        </Box>
+        <Box display="flex" gap={2} mb={3} width="100%" alignItems="center">
           <TextField
             select
             label="De"
@@ -115,7 +118,7 @@ const CurrencyConverter: React.FC = () => {
           </TextField>
         </Box>
         <Box sx={{ mt: 4, width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <GlassCard sx={{ p: 2, maxWidth: 320, minWidth: 180, background: 'rgba(80,180,255,0.18)' }}>
+          <GlassBox>
             <Typography variant="subtitle2" sx={{ color: 'secondary.light', mb: 1, fontWeight: 500, letterSpacing: 1 }}>
               Resultado
             </Typography>
@@ -126,7 +129,7 @@ const CurrencyConverter: React.FC = () => {
                 {result} {to}
               </Typography>
             )}
-          </GlassCard>
+          </GlassBox>
         </Box>
       </GlassCard>
     );
