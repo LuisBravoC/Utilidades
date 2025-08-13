@@ -6,6 +6,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import { useState, useEffect } from 'react';
+import type { JSX } from 'react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
@@ -13,7 +14,7 @@ import { CSS } from '@dnd-kit/utilities';
 import Home from './modules/Home';
 import UnitConverter from './modules/UnitConverter';
 import CurrencyConverter from './modules/CurrencyConverter';
-import { MonetizationOn, SquareFoot, Build } from '@mui/icons-material';
+import { MonetizationOn, SquareFoot } from '@mui/icons-material';
 
 
 const drawerWidth = 240;
@@ -25,8 +26,22 @@ const defaultMenuItems = [
   //{ id: 'example', text: 'Nueva Herramienta', icon: <Build />, path: '/nueva' },
   // Agrega aquí más herramientas
 ];
-// Componente para cada ítem sortable
-function SortableListItem({ item, selected, onClick, reorderMode }) {
+// Tipos para los props
+type MenuItemType = {
+  id: string;
+  text: string;
+  icon: JSX.Element;
+  path: string;
+};
+
+interface SortableListItemProps {
+  item: MenuItemType;
+  selected: boolean;
+  onClick: () => void;
+  reorderMode: boolean;
+}
+
+function SortableListItem({ item, selected, onClick, reorderMode }: SortableListItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id, disabled: !reorderMode });
   return (
     <ListItem
@@ -209,12 +224,12 @@ function App() {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = (event: any) => {
     const { active, over } = event;
     if (active.id !== over?.id) {
-      const oldIndex = menuItems.findIndex((i) => i.id === active.id);
-      const newIndex = menuItems.findIndex((i) => i.id === over.id);
-      setMenuItems((items) => arrayMove(items, oldIndex, newIndex));
+      const oldIndex = menuItems.findIndex((i: MenuItemType) => i.id === active.id);
+      const newIndex = menuItems.findIndex((i: MenuItemType) => i.id === over.id);
+      setMenuItems((items: MenuItemType[]) => arrayMove(items, oldIndex, newIndex));
     }
   };
 

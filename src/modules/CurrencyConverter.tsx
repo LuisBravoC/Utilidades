@@ -71,7 +71,7 @@ const CurrencyConverter: React.FC = () => {
             size="medium"
           />
         </Box>
-        <Box display="flex" gap={2} mb={3} width="100%" alignItems="center">
+        <Box mb={3} width="100%">
           <Autocomplete
             options={currencies}
             getOptionLabel={option => `${option.name} (${option.code})`}
@@ -84,20 +84,22 @@ const CurrencyConverter: React.FC = () => {
             renderInput={params => (
               <TextField {...params} label="De" fullWidth size="medium" disabled={currenciesLoading} />
             )}
-            sx={{ minWidth: 0, flex: 1 }}
+            sx={{ minWidth: 0, mb: 2 }}
           />
-          <Tooltip title="Intercambiar monedas">
-            <IconButton
-              color="primary"
-              sx={{ mx: 1, my: { xs: 2, sm: 0 } }}
-              onClick={() => {
-                setState(s => ({ ...s, from: s.to, to: s.from }));
-              }}
-              size="large"
-            >
-              <SwapHorizIcon fontSize="inherit" />
-            </IconButton>
-          </Tooltip>
+          <Box display="flex" justifyContent="center" mb={2}>
+            <Tooltip title="Intercambiar monedas">
+              <IconButton
+                color="primary"
+                sx={{ mx: 1 }}
+                onClick={() => {
+                  setState(s => ({ ...s, from: s.to, to: s.from }));
+                }}
+                size="large"
+              >
+                <SwapHorizIcon fontSize="inherit" />
+              </IconButton>
+            </Tooltip>
+          </Box>
           <Autocomplete
             options={currencies}
             getOptionLabel={option => `${option.name} (${option.code})`}
@@ -110,7 +112,7 @@ const CurrencyConverter: React.FC = () => {
             renderInput={params => (
               <TextField {...params} label="A" fullWidth size="medium" disabled={currenciesLoading} />
             )}
-            sx={{ minWidth: 0, flex: 1 }}
+            sx={{ minWidth: 0 }}
           />
         </Box>
         <Box sx={{ mt: 4, width: '100%', display: 'flex', justifyContent: 'center' }}>
