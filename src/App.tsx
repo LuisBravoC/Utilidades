@@ -1,24 +1,82 @@
 
 
 import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { Box, CssBaseline, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, AppBar, Typography, IconButton, ThemeProvider, createTheme } from '@mui/material';
+import { Box, CssBaseline, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, AppBar, Typography, IconButton, ThemeProvider, createTheme, Button } from '@mui/material';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import Home from './modules/Home';
 import UnitConverter from './modules/UnitConverter';
 import CurrencyConverter from './modules/CurrencyConverter';
-import { MonetizationOn, SquareFoot } from '@mui/icons-material';
+import { MonetizationOn, SquareFoot, Build } from '@mui/icons-material';
+import ExampleTool from './modules/ExampleTool';
 
 
 const drawerWidth = 240;
 
-const menuItems = [
-  { text: 'Inicio', icon: <HomeIcon />, path: '/' },
-  { text: 'Conversor de Unidades', icon: <SquareFoot />, path: '/conversor' },
-  { text: 'Conversor de Monedas', icon: <MonetizationOn />, path: '/monedas' },
+const defaultMenuItems = [
+  { id: 'home', text: 'Inicio', icon: <HomeIcon />, path: '/' },
+  { id: 'unit', text: 'Conversor de Unidades', icon: <SquareFoot />, path: '/conversor' },
+  { id: 'currency', text: 'Conversor de Monedas', icon: <MonetizationOn />, path: '/monedas' },
+  //{ id: 'example', text: 'Nueva Herramienta', icon: <Build />, path: '/nueva' },
   // Agrega aquí más herramientas
 ];
+// Componente para cada ítem sortable
+function SortableListItem({ item, selected, onClick, reorderMode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id, disabled: !reorderMode });
+  return (
+    <ListItem
+      disablePadding
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        zIndex: isDragging ? 999 : 'auto',
+        userSelect: 'none',
+        background: isDragging ? 'rgba(96,165,250,0.10)' : undefined,
+      }}
+      {...attributes}
+    >
+      {reorderMode && (
+        <span
+          {...listeners}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'grab',
+            marginRight: 4,
+            color: isDragging ? '#2563eb' : '#aaa',
+            opacity: 0.7,
+          }}
+          tabIndex={-1}
+          aria-label="Mover"
+        >
+          <DragIndicatorIcon fontSize="small" />
+        </span>
+      )}
+      <ListItemButton
+        component={Link}
+        to={item.path}
+        onClick={onClick}
+        selected={selected}
+        sx={{
+          '&.Mui-selected, &.Mui-selected:hover': {
+            backgroundColor: 'rgba(255,255,255,0.15)',
+          },
+          color: '#fff',
+        }}
+      >
+        <ListItemIcon sx={{ color: '#fff' }}>{item.icon}</ListItemIcon>
+        <ListItemText primary={item.text} />
+      </ListItemButton>
+    </ListItem>
+  );
+}
 
 const theme = createTheme({
   breakpoints: {
@@ -119,35 +177,86 @@ const theme = createTheme({
 });
 
 function App() {
+  const [reorderMode, setReorderMode] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuItems, setMenuItems] = useState(() => {
+    const saved = localStorage.getItem('menuOrder');
+    if (saved) {
+      try {
+        const ids: string[] = JSON.parse(saved);
+        // reconstruir el orden y agregar nuevos items al final
+        const ordered = ids
+          .map((id) => defaultMenuItems.find((item) => item.id === id))
+          .filter(Boolean) as typeof defaultMenuItems;
+        const missing = defaultMenuItems.filter(
+          (item) => !ordered.some((o) => o.id === item.id)
+        );
+        return [...ordered, ...missing];
+      } catch {
+        return defaultMenuItems;
+      }
+    }
+    return defaultMenuItems;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('menuOrder', JSON.stringify(menuItems.map((item) => item.id)));
+  }, [menuItems]);
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { delay: 0, tolerance: 5 } }));
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      const oldIndex = menuItems.findIndex((i) => i.id === active.id);
+      const newIndex = menuItems.findIndex((i) => i.id === over.id);
+      setMenuItems((items) => arrayMove(items, oldIndex, newIndex));
+    }
+  };
+
   const drawer = (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Toolbar />
-      <List>
-        {menuItems.map((item) => (
-          <ListItem disablePadding key={item.text}>
-            <ListItemButton
-              component={Link}
-              to={item.path}
-              onClick={() => setMobileOpen(false)}
-              sx={{
-                '&.Mui-selected, &.Mui-selected:hover': {
-                  backgroundColor: 'rgba(255,255,255,0.15)',
-                },
-                color: '#fff',
-              }}
-            >
-              <ListItemIcon sx={{ color: '#fff' }}>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={menuItems.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+          <List sx={{ flex: 1 }}>
+            {menuItems.map((item) => (
+              <SortableListItem
+                key={item.id}
+                item={item}
+                selected={window.location.hash.endsWith(item.path)}
+                onClick={() => setMobileOpen(false)}
+                reorderMode={reorderMode}
+              />
+            ))}
+          </List>
+        </SortableContext>
+      </DndContext>
+      <Box sx={{ p: 2, mt: 'auto', display: 'flex', justifyContent: 'center' }}>
+        <Button
+          variant={reorderMode ? 'contained' : 'outlined'}
+          color={reorderMode ? 'primary' : 'inherit'}
+          startIcon={<DragIndicatorIcon />}
+          onClick={() => setReorderMode((v) => !v)}
+          sx={{
+            fontWeight: 700,
+            borderRadius: 3,
+            boxShadow: reorderMode ? 3 : 0,
+            background: reorderMode ? 'linear-gradient(90deg, #2563eb 60%, #60a5fa 100%)' : undefined,
+            color: reorderMode ? '#fff' : 'text.primary',
+            '&:hover': {
+              background: reorderMode ? 'linear-gradient(90deg, #1e40af 60%, #60a5fa 100%)' : undefined,
+            },
+            transition: 'all 0.2s',
+          }}
+        >
+          {reorderMode ? 'Modo reordenar' : 'Reordenar menú'}
+        </Button>
+      </Box>
     </div>
   );
 
@@ -156,7 +265,7 @@ function App() {
       <Router>
         <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: 'background.default' }}>
           <CssBaseline />
-          <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, boxShadow: 2 }}>
+          <AppBar position="fixed" sx={{ mt: 0.5, zIndex: (theme) => theme.zIndex.drawer + 1, boxShadow: 2 }}>
             <Toolbar>
               <IconButton color="inherit" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { sm: 'none' } }}>
                 <MenuIcon />
@@ -211,6 +320,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/conversor" element={<UnitConverter />} />
                 <Route path="/monedas" element={<CurrencyConverter />} />
+                {/* <Route path="/nueva" element={<ExampleTool />} /> */}
                 {/* Agrega más rutas aquí */}
               </Routes>
             </Box>

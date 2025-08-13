@@ -10,7 +10,7 @@ export default function Home() {
         Selecciona una herramienta del menú lateral para comenzar.
       </Typography>
       <Typography variant="body2" sx={{ color: 'secondary.light', mt: 2 }}>
-        Plataforma modular y moderna para tus utilidades diarias.
+        Plataforma para utilidades diarias.
       </Typography>
     </Paper>
   );
