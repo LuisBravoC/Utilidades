@@ -7,13 +7,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import { useState, useEffect } from 'react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import Home from './modules/Home';
 import UnitConverter from './modules/UnitConverter';
 import CurrencyConverter from './modules/CurrencyConverter';
 import { MonetizationOn, SquareFoot, Build } from '@mui/icons-material';
-import ExampleTool from './modules/ExampleTool';
 
 
 const drawerWidth = 240;
@@ -221,7 +221,12 @@ function App() {
   const drawer = (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Toolbar />
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        modifiers={[restrictToVerticalAxis]}
+      >
         <SortableContext items={menuItems.map((i) => i.id)} strategy={verticalListSortingStrategy}>
           <List sx={{ flex: 1 }}>
             {menuItems.map((item) => (
