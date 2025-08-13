@@ -248,7 +248,7 @@ function App() {
               <SortableListItem
                 key={item.id}
                 item={item}
-                selected={window.location.hash.endsWith(item.path)}
+                selected={false}
                 onClick={() => setMobileOpen(false)}
                 reorderMode={reorderMode}
               />
